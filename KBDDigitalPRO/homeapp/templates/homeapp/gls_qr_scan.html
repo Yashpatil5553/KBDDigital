@@ -1,0 +1,220 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GLS Admit Scanner</title>
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+  <link rel="stylesheet" href="{% static 'css/gls_checkin.css' %}">
+  <style>
+    :root {
+      --blue-dark: #001f3f;
+      --blue-light: #00cfff;
+      --green: #2ecc71;
+      --red: #e74c3c;
+      --yellow: #f1c40f;
+      --glass: rgba(255, 255, 255, 0.08);
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, var(--blue-dark), #0074D9);
+      color: #fff;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow-y: auto;
+    }
+
+    .dashboard {
+      background: var(--glass);
+      backdrop-filter: blur(12px);
+      padding: 25px;
+      border-radius: 20px;
+      width: 100%;
+      max-width: 450px;
+      box-shadow: 0 0 25px rgba(0,255,255,0.3);
+      text-align: center;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    h2 {
+      margin-bottom: 15px;
+      font-size: 1.8rem;
+      background: linear-gradient(90deg, #00fff7, #00d4ff, #6cfaff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .scanner {
+      width: 100%;
+      margin: 10px auto;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .info-box {
+      margin-top: 20px;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 15px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+
+    .btn {
+      margin-top: 18px;
+      padding: 12px 20px;
+      font-weight: bold;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: all 0.25s ease;
+    }
+
+    .btn-admit {
+      background-color: var(--green);
+      color: #fff;
+      box-shadow: 0 0 12px rgba(46, 204, 113, 0.6);
+    }
+
+    .btn-scan {
+      background-color: var(--blue-light);
+      color: #000;
+      box-shadow: 0 0 12px rgba(0, 207, 255, 0.6);
+    }
+
+    .btn:hover {
+      transform: scale(1.05);
+      filter: brightness(1.1);
+    }
+
+    a.btn {
+      display: inline-block;
+      text-align: center;
+      text-decoration: none;
+      margin-top: 15px;
+    }
+
+    .back-btn {
+      display: inline-block;
+      margin-bottom: 10px;
+      color: #00cfff;
+      text-decoration: none;
+      font-weight: 600;
+      border: 1px solid #00cfff;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+    }
+
+    .back-btn:hover {
+      background-color: #00cfff;
+      color: #000;
+    }
+
+    .message {
+      margin-top: 20px;
+      font-weight: bold;
+      font-size: 1rem;
+    }
+
+    .message.success { color: var(--green); }
+    .message.warning { color: var(--yellow); }
+    .message.error   { color: var(--red); }
+
+    #confetti-canvas {
+      position: fixed;
+      pointer-events: none;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1000;
+    }
+
+    @media(max-width: 500px) {
+      .dashboard {
+        padding: 15px;
+      }
+      .btn,
+      a.btn {
+        width: 100%;
+        box-sizing: border-box;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="confetti-canvas"></canvas>
+
+<div class="dashboard">
+  {% comment %} <img src="{% static 'images/Welcome.png' %}" alt="GLS Welcome" /> {% endcomment %}
+  <h2>KBD QR Scanner</h2>
+  <a href="{% url 'gls_admitted_report' %}" class="back-btn">📋 Admitted Report</a>
+  
+
+  {% if not user_data %}
+    <div id="reader" class="scanner"></div>
+  {% endif %}
+
+  <form id="scanForm" method="POST" style="display:none;">
+    {% csrf_token %}
+    <input type="hidden" name="folio_number" id="folioInput">
+  </form>
+
+  {% if user_data %}
+    <div class="info-box">
+      <p><strong>Name:</strong> {{ user_data.Name }}</p>
+      <p><strong>Folio Number:</strong> {{ user_data.Folio_Number }}</p>
+      <p><strong>Code:</strong> {{ user_data.Code }}</p>
+    </div>
+
+    <form method="post">
+      {% csrf_token %}
+      <input type="hidden" name="folio_number" value="{{ user_data.Folio_Number }}">
+      <audio autoplay>
+        <source src="{% static 'audio/capture.mp3' %}" type="audio/mpeg">
+      </audio>
+      {% if show_admit_button %}
+        <input type="hidden" name="action" value="admit">
+        <button type="submit" class="btn btn-admit">✅ Admit</button>
+      {% endif %}
+    </form>
+
+    <!-- ✅ Fixed button spacing here -->
+    <a href="{% url 'gls_qr_scan' %}" class="btn btn-scan">🔄 Scan More</a>
+  {% endif %}
+
+  {% if message %}
+    <p class="message {{ message_class }}">{{ message }}</p>
+  {% endif %}
+</div>
+
+{% if message_class == "success" and "admitted" in message %}
+<audio autoplay>
+  <source src="{% static 'audio/success.mp3' %}" type="audio/mpeg">
+</audio>
+{% endif %}
+
+<script>
+function onScanSuccess(decodedText) {
+  document.getElementById('folioInput').value = decodedText.trim();
+  document.getElementById('scanForm').submit();
+}
+
+{% if not user_data %}
+let html5QrcodeScanner = new Html5QrcodeScanner("reader", {
+  fps: 10,
+  qrbox: 250
+});
+html5QrcodeScanner.render(onScanSuccess);
+{% endif %}
+</script>
+</body>
+</html>

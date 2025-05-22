@@ -1,0 +1,191 @@
+:root {
+    --blue1: #001f3f;
+    --blue2: #0074D9;
+    --blue3: #00cfff;
+    --accent: #00d4ff;
+    --white: #ffffff;
+    --text-light: #e0f7fa;
+    --card-bg: rgba(0, 0, 0, 0.35);
+  }
+  
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, var(--blue1), var(--blue2));
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-light);
+  }
+  
+  .wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+  }
+  
+  .container {
+    max-width: 500px;
+    width: 90%;
+    background: var(--card-bg);
+    padding: 30px 20px;
+    border-radius: 16px;
+    box-shadow: 0 0 20px rgba(0, 191, 255, 0.3);
+    text-align: center;
+    transition: 0.3s ease;
+  }
+  
+  .container:hover {
+    box-shadow: 0 0 25px rgba(0, 212, 255, 0.4);
+    transform: translateY(-4px);
+  }
+  
+  .step h2 {
+    font-size: 1.4rem;
+    color: var(--white);
+    margin-bottom: 16px;
+  }
+  
+  .input-box {
+    width: 70%;
+    padding: 8px 12px;
+    font-size: 0.95rem;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background-color: rgba(255, 255, 255, 0.05);
+    color: var(--white);
+    outline: none;
+    margin-bottom: 12px;
+    margin-top: 12px;
+    transition: border 0.3s ease;
+    text-align: center;
+    display: inline-block;
+  }
+  
+  .input-box::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+  }
+  
+  .input-box:focus {
+    border-color: var(--accent);
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+  
+  .btn {
+    padding: 10px 22px;
+    background: linear-gradient(to right, var(--blue3), var(--blue2));
+    color: #000;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+  }
+  
+  .btn:hover {
+    background: var(--white);
+    color: var(--blue2);
+  }
+  
+  .table-container {
+    width: 100%;
+    overflow-x: auto;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 0 10px rgba(0, 191, 255, 0.1);
+  }
+  
+  th {
+    background-color: rgba(0, 191, 255, 0.2);
+    color: var(--white);
+    padding: 12px 18px;
+    font-size: 1.05rem;
+    font-weight: 700;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+  
+  td {
+    padding: 6px 12px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    vertical-align: middle;
+  }
+  
+  td input {
+    margin: 0 auto;
+    text-align: center;
+  }
+  
+  table tr:nth-child(even) td {
+    background-color: rgba(255, 255, 255, 0.04);
+  }
+  
+  table tr:hover td {
+    background-color: rgba(0, 212, 255, 0.12);
+  }
+  
+  .region-label {
+    color: var(--text-light);
+    font-weight: 500;
+  }
+  
+  .bold {
+    font-weight: 700;
+    color: var(--white);
+  }
+
+  .status-text {
+    font-weight: bold;
+    transition: color 0.3s ease;
+  }
+  
+  .status-blue {
+    color: #00cfff;
+  }
+  
+  .status-green {
+    color: #00ff99;
+  }
+  
+  .status-red {
+    color: #ff6666;
+  }
+  
+  
+  .error {
+    background-color: #ff4d4d;
+    color: white;
+    padding: 10px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+  }
+  
+  @media (max-width: 500px) {
+    .container {
+      padding: 25px 16px;
+    }
+  
+    .step h2 {
+      font-size: 1.25rem;
+    }
+  
+    .btn {
+      width: 100%;
+      font-size: 1rem;
+    }
+  }
+  

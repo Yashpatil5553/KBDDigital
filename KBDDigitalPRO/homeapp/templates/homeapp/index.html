@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>KBD Business Suite - Login Page</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300&display=swap" rel="stylesheet" />
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Quicksand", sans-serif;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #001f3f, #0074d9, #00bfff);
+      width: 100%;
+      overflow: hidden;
+      padding: 10px;
+    }
+
+    .ring {
+      position: relative;
+      width: 500px;
+      height: 500px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .ring .circle {
+      position: absolute;
+      inset: 0;
+      border: 2px solid #fff;
+      transition: 0.5s;
+    }
+
+    .ring .circle:nth-child(1) {
+      border-radius: 38% 62% 63% 37% / 41% 44% 56% 59%;
+      animation: animate 6s linear infinite;
+    }
+
+    .ring .circle:nth-child(2) {
+      border-radius: 41% 44% 56% 59%/38% 62% 63% 37%;
+      animation: animate 4s linear infinite;
+    }
+
+    .ring .circle:nth-child(3) {
+      border-radius: 41% 44% 56% 59%/38% 62% 63% 37%;
+      animation: animate2 10s linear infinite;
+    }
+
+    .ring:hover .circle:nth-child(1) {
+      border-color: #2563eb;
+      filter: drop-shadow(0 0 20px #2563eb);
+    }
+
+    .ring:hover .circle:nth-child(2) {
+      border-color: #3b82f6;
+      filter: drop-shadow(0 0 20px #3b82f6);
+    }
+
+    .ring:hover .circle:nth-child(3) {
+      border-color: #60a5fa;
+      filter: drop-shadow(0 0 20px #60a5fa);
+    }
+
+    @keyframes animate {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes animate2 {
+      0% { transform: rotate(360deg); }
+      100% { transform: rotate(0deg); }
+    }
+
+    .login {
+      position: absolute;
+      width: 90%;
+      max-width: 320px;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .login h1 {
+      font-size: 2.4em;
+      color: #ffffff;
+      text-align: center;
+      text-shadow: 0 0 10px rgba(0, 255, 255, 0.6);
+    }
+
+    .login h2 {
+      font-size: 1.3em;
+      color: #e0f7fa;
+      text-align: center;
+      text-shadow: 0 0 6px rgba(0, 255, 255, 0.4);
+    }
+
+    .inputBx {
+      position: relative;
+      width: 100%;
+    }
+
+    .inputBx input {
+      width: 100%;
+      padding: 12px 20px;
+      background: transparent;
+      border: 2px solid #a9c4eb;
+      border-radius: 40px;
+      font-size: 1em;
+      color: #e0e6ed;
+    }
+
+    .inputBx input::placeholder {
+      color: rgba(224, 230, 237, 0.75);
+    }
+
+    .inputBx button {
+      width: 100%;
+      padding: 12px 20px;
+      background: linear-gradient(45deg, #2563eb, #60a5fa);
+      border: none;
+      border-radius: 40px;
+      font-size: 1.1em;
+      color: #fff;
+      cursor: pointer;
+      margin-top: 15px;
+      transition: 0.3s ease-in-out;
+    }
+
+    .inputBx button:hover {
+      box-shadow: 0 0 15px #60a5fa, 0 0 40px #3b82f6;
+      transform: scale(1.05);
+    }
+
+    .inputBx input:focus {
+      border-color: #60a5fa;
+      box-shadow: 0 0 10px #60a5fa;
+      outline: none;
+    }
+
+    .toggle-password {
+      position: absolute;
+      right: 20px;
+      top: 65%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      color: #ccc;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+    }
+
+    .toggle-password:hover {
+      color: #fff;
+    }
+
+    @media (max-width: 480px) {
+      .ring {
+        width: 320px;
+        height: 320px;
+      }
+
+      .login h1 {
+        font-size: 1.8em;
+      }
+
+      .login h2 {
+        font-size: 1em;
+      }
+
+      .inputBx button {
+        font-size: 0.8em;
+        padding: 8px 12px;
+        width: 60%;
+        display: block;
+        margin: 20px auto 0 auto;
+      }
+
+      .inputBx input {
+        font-size: 1em;
+        padding: 10px 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="ring">
+    <div class="circle"></div>
+    <div class="circle"></div>
+    <div class="circle"></div>
+
+    <div class="login">
+      <form method="post" action="/login/">
+        {% csrf_token %}
+        <h1>KBD Digital</h1>
+        <h2>Login Here</h2>
+
+        {% if error %}
+          <p style="color: #f87171; font-weight: bold;">{{ error }}</p>
+        {% endif %}
+
+        <div class="inputBx">
+          <label for="username">Folio Number</label>
+          <input type="text" placeholder="Enter Folio Number" id="username" name="username" required />
+        </div>
+
+        <div class="inputBx">
+          <label for="password">Password</label>
+          <input type="password" placeholder="Password" id="password" name="pass" required />
+          <i class="fas fa-eye toggle-password" onclick="togglePassword()"></i>
+        </div>
+
+        <div class="inputBx">
+          <button type="submit">Log In</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    function togglePassword() {
+      const passwordField = document.getElementById("password");
+      const toggleIcon = document.querySelector(".toggle-password");
+      if (passwordField.type === "password") {
+        passwordField.type = "text";
+        toggleIcon.classList.replace("fa-eye", "fa-eye-slash");
+      } else {
+        passwordField.type = "password";
+        toggleIcon.classList.replace("fa-eye-slash", "fa-eye");
+      }
+    }
+  </script>
+</body>
+</html>

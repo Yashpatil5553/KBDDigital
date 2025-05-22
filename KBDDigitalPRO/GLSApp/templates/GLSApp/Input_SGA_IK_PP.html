@@ -1,0 +1,193 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Target Input Form</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="{% static 'css/ip_sga_ik_pp.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <script>
+    let currentStep = 1;
+    let sgaStep = 0;
+    let sgaValues = { SGA: null, IK: null, PP: null };
+
+    function nextStep() {
+      const current = document.getElementById(`step-${currentStep}`);
+      const inputs = current.querySelectorAll('input[required]');
+      for (let input of inputs) {
+        if (!input.value.trim()) {
+          alert("Please fill all required fields before proceeding.");
+          input.focus();
+          return;
+        }
+        if (input.type === "number" && isNaN(parseFloat(input.value))) {
+          alert("Please enter valid numbers.");
+          input.focus();
+          return;
+        }
+      }
+      const next = document.getElementById(`step-${currentStep + 1}`);
+      if (current && next) {
+        current.style.display = 'none';
+        next.style.display = 'block';
+        currentStep++;
+      }
+    }
+
+    function prevStep() {
+      if (currentStep > 1) {
+        const current = document.getElementById(`step-${currentStep}`);
+        const prev = document.getElementById(`step-${currentStep - 1}`);
+        if (current && prev) {
+          current.style.display = 'none';
+          prev.style.display = 'block';
+          currentStep--;
+        }
+      }
+    }
+
+    function goBackFromSGA() {
+      const current = document.getElementById("step-6");
+      const prev = document.getElementById("step-5");
+      if (current && prev) {
+        current.style.display = 'none';
+        prev.style.display = 'block';
+        currentStep = 5;
+        sgaStep = 0;
+        document.getElementById("label").innerHTML = "<h2>SGA</h2>";
+        document.getElementById("inputField").placeholder = "Enter SGA Target";
+        document.getElementById("inputField").value = "";
+      }
+    }
+
+    function nextSGAIKPP() {
+      const input = document.getElementById("inputField");
+      let value = input.value.trim();
+      if (value === "") {
+        alert("Please enter a value.");
+        return;
+      }
+      const intVal = parseInt(value, 10);
+      if (isNaN(intVal)) {
+        alert("Please enter a valid integer.");
+        return;
+      }
+      if (sgaStep === 0) {
+        sgaValues.SGA = intVal;
+        document.getElementById("label").innerHTML = "<h2>IK</h2>";
+        input.placeholder = "Enter IK Target";
+        input.value = "";
+        input.focus();
+        sgaStep++;
+      } else if (sgaStep === 1) {
+        sgaValues.IK = intVal;
+        document.getElementById("label").innerHTML = "<h2>PP</h2>";
+        input.placeholder = "Enter PP Target";
+        input.value = "";
+        input.focus();
+        sgaStep++;
+      } else if (sgaStep === 2) {
+        sgaValues.PP = intVal;
+        document.getElementById("sgaInput").value = sgaValues.SGA;
+        document.getElementById("ikInput").value = sgaValues.IK;
+        document.getElementById("ppInput").value = sgaValues.PP;
+        console.log("✅ Submitting form:", sgaValues);
+        document.getElementById("multiStepForm").submit();
+      }
+    }
+  </script>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="container">
+      <form method="post" action="{% url 'input_values' %}" id="multiStepForm">
+        {% csrf_token %}
+
+        <!-- Step 1 -->
+        <div class="step" id="step-1">
+          <h2><i class="fas fa-map-marked-alt"></i> TURPHH Branch Offices</h2>
+          <div class="table-container">
+            <table>
+              <tr><td class="region-label">T</td><td><input type="number" name="TEL_BO_Target" placeholder="Enter Telangana BO Target" class="input-box" required></td></tr>
+              <tr><td class="region-label">U</td><td><input type="number" name="UP_BO_Target" placeholder="Enter Uttar Pradesh BO Target" class="input-box" required></td></tr>
+              <tr><td class="region-label">R</td><td><input type="number" name="RJ_BO_Target" placeholder="Enter Rajasthan BO Target" class="input-box" required></td></tr>
+              <tr><td class="region-label">P</td><td><input type="number" name="PB_BO_Target" placeholder="Enter Punjab BO Target" class="input-box" required></td></tr>
+              <tr><td class="region-label">H</td><td><input type="number" name="HR_BO_Target" placeholder="Enter Haryana BO Target" class="input-box" required></td></tr>
+              <tr><td class="region-label">H</td><td><input type="number" name="HP_BO_Target" placeholder="Enter Himachal Pradesh BO Target" class="input-box" required></td></tr>
+            </table>
+          </div>
+          <div class="button-row">
+            <a href="{% url 'target_card_form' %}" class="btn"><i class="fa fa-arrow-left"></i> Back</a>
+            <button type="button" class="btn" onclick="nextStep()"><i class="fa fa-arrow-right"></i> Next</button>
+          </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="step" id="step-2" style="display: none;">
+          <h2><i class="fas fa-star"></i> Star NGL & CMR</h2>
+          <div class="table-container">
+            <table>
+              <tr>
+                <td class="region-label">Star NGL</td>
+                <td><input type="number" name="Star_NGL_Target" placeholder="Enter Star NGL Target" required class="input-box" /></td>
+              </tr>
+              <tr>
+                <td class="region-label">CMR</td>
+                <td><input type="number" name="CMR_Target" placeholder="Enter CMR Target" required class="input-box" /></td>
+              </tr>
+            </table>
+          </div>
+          <div class="button-row">
+            <button type="button" class="btn" onclick="prevStep()"><i class="fa fa-arrow-left"></i> Back</button>
+            <button type="button" class="btn" onclick="nextStep()"><i class="fa fa-arrow-right"></i> Next</button>
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="step" id="step-3" style="display: none;">
+          <h2><i class="fas fa-shoe-prints"></i> Top Active Leg</h2>
+          <input type="number" name="TAL_Target" placeholder="Enter TAL Target" required class="input-box" />
+          <div class="button-row">
+            <button type="button" class="btn" onclick="prevStep()"><i class="fa fa-arrow-left"></i> Back</button>
+            <button type="button" class="btn" onclick="nextStep()"><i class="fa fa-arrow-right"></i> Next</button>
+          </div>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="step" id="step-4" style="display: none;">
+          <h2><i class="fas fa-plane-departure"></i> Mahavir Awards</h2>
+          <input type="number" name="Mahavir_Award_Target" placeholder="Enter Mahavir Awards Target" required class="input-box" />
+          <div class="button-row">
+            <button type="button" class="btn" onclick="prevStep()"><i class="fa fa-arrow-left"></i> Back</button>
+            <button type="button" class="btn" onclick="nextStep()"><i class="fa fa-arrow-right"></i> Next</button>
+          </div>
+        </div>
+
+        <!-- Step 5 -->
+        <div class="step" id="step-5" style="display: none;">
+          <h2>CMR Centre</h2>
+          <input type="number" name="CMR_Centre_Target" placeholder="Enter CMR Centre Target" required class="input-box" />
+          <div class="button-row">
+            <button type="button" class="btn" onclick="prevStep()"><i class="fa fa-arrow-left"></i> Back</button>
+            <button type="button" class="btn" onclick="nextStep()"><i class="fa fa-arrow-right"></i> Next</button>
+          </div>
+        </div>
+
+        <!-- Step 6: SGA / IK / PP -->
+        <div class="step" id="step-6" style="display: none;">
+          <label id="label"><h2>SGA</h2></label>
+          <input type="text" id="inputField" class="input-box" placeholder="Enter SGA Target" required />
+          <input type="hidden" name="SGA" id="sgaInput">
+          <input type="hidden" name="IK" id="ikInput">
+          <input type="hidden" name="PP" id="ppInput">
+          <div class="button-row">
+            <button type="button" class="btn" onclick="goBackFromSGA()"><i class="fa fa-arrow-left"></i> Back</button>
+            <button type="button" class="btn" onclick="nextSGAIKPP()"><i class="fa fa-arrow-right"></i> Next</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</body>
+</html>

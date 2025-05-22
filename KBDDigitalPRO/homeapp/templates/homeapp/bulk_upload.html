@@ -1,0 +1,142 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bulk Upload</title>
+  <link rel="stylesheet" href="{% static 'css/gls_checkin.css' %}">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #001f3f, #0074D9);
+      color: #fff;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow-y: auto;
+    }
+
+    .dashboard {
+      background: rgba(255,255,255,0.08);
+      backdrop-filter: blur(12px);
+      padding: 25px;
+      border-radius: 20px;
+      width: 100%;
+      max-width: 600px;
+      box-shadow: 0 0 25px rgba(0,255,255,0.3);
+      text-align: center;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    h2 {
+      margin-bottom: 15px;
+      font-size: 1.8rem;
+      background: linear-gradient(90deg, #00fff7, #00d4ff, #6cfaff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    input[type="file"] {
+      margin: 15px auto;
+      padding: 10px;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      width: 90%;
+      color: #fff;
+      background: rgba(255,255,255,0.1);
+    }
+
+    button {
+      padding: 12px 25px;
+      font-weight: bold;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      font-size: 1rem;
+      background-color: #00cfff;
+      color: #000;
+      box-shadow: 0 0 12px rgba(0, 207, 255, 0.6);
+      transition: all 0.25s ease;
+      margin-top: 15px;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+      filter: brightness(1.1);
+    }
+
+    table {
+      width: 100%;
+      margin-top: 20px;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+      background-color: rgba(255,255,255,0.05);
+      color: white;
+    }
+
+    th, td {
+      border: 1px solid rgba(255,255,255,0.2);
+      padding: 6px 10px;
+      text-align: left;
+    }
+
+    .message {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    .success { color: #2ecc71; }
+    .error { color: #e74c3c; }
+  </style>
+</head>
+<body>
+<div class="dashboard">
+  <h2>📥 Bulk Excel Upload</h2>
+
+  {% for msg in messages %}
+    <p class="message {{ msg.tags }}">{{ msg }}</p>
+  {% endfor %}
+
+  {% if not preview_data %}
+  <form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="file" name="excel_file" accept=".xls,.xlsx" required />
+    <button type="submit" name="preview" value="1">📤 Upload & Preview</button>
+  </form>
+  {% endif %}
+
+  {% if preview_data %}
+    <div class="info-box" style="max-height: 350px; overflow-y: auto;">
+      <h3>📊 Preview Data</h3>
+      <table>
+        <thead>
+          <tr>
+            {% for col in preview_data.0.keys %}
+              <th>{{ col }}</th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in preview_data %}
+            <tr>
+              {% for value in row.values %}
+                <td>{{ value }}</td>
+              {% endfor %}
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="confirm_upload" value="1">
+        <button type="submit">✅ Confirm Upload</button>
+      </form>
+    </div>
+  {% endif %}
+</div>
+</body>
+</html>

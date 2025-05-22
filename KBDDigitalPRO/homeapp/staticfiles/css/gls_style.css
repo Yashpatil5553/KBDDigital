@@ -1,0 +1,227 @@
+:root {
+  --blue1: #0f2027;
+  --blue2: #203a43;
+  --blue3: #2c5364;
+  --blue4: #001f3f;
+  --blue5: #0074D9;
+  --blue6: #00cfff;
+  --accent: #00d4ff;
+  --white: #ffffff;
+  --text-light: #e0f7fa;
+  --text-muted: #aacfd0;
+  --card-bg: rgba(255, 255, 255, 0.05);
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, var(--blue4), var(--blue5));
+  color: var(--text-light);
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  padding-top: 50px;
+  min-height: 100vh;
+}
+
+.wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.container {
+  max-width: 800px;
+  width: 90%;
+  background-color: var(--card-bg);
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0, 191, 255, 0.1);
+  backdrop-filter: blur(8px);
+  transition: box-shadow 0.3s, transform 0.3s;
+}
+
+.container:hover {
+  box-shadow: 0 0 25px rgba(0, 212, 255, 0.4);
+  transform: translateY(-4px);
+}
+
+.page-title {
+  text-align: center;
+  font-size: 1.9rem;
+  margin-bottom: 10px;
+  color: var(--white);
+}
+
+.user-info {
+  text-align: center;
+  font-size: 1.1rem;
+  color: var(--text-muted);
+  margin-bottom: 25px;
+}
+
+.radio-group1 {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin: 10px 0 20px;
+  font-size: 1rem;
+}
+
+.radio-group1 label {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.center-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+input[type="number"],
+input[type="text"],
+input[type="password"] {
+  width: 60%;
+  max-width: 420px;
+  padding: 14px 18px;
+  font-size: 1rem;
+  border-radius: 12px;
+  border: 2px solid rgba(0, 191, 255, 0.4);
+  background-color: rgba(255, 255, 255, 0.07);
+  color: #e6f7ff;
+  transition: 0.3s ease;
+  box-shadow: inset 0 0 8px rgba(0, 191, 255, 0.1);
+}
+
+input::placeholder {
+  color: #aacfd0;
+}
+
+input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 12px rgba(0, 212, 255, 0.5);
+  background-color: rgba(255, 255, 255, 0.1);
+  outline: none;
+}
+
+.btn {
+  background: linear-gradient(135deg, var(--blue6), var(--blue5));
+  color: #000;
+  border: none;
+  padding: 12px 22px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 30px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.3s ease;
+  margin-top: 10px;
+}
+
+.btn:hover {
+  background: var(--white);
+  color: var(--blue2);
+  transform: scale(1.05);
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+}
+
+.result-box {
+  background: rgba(255, 255, 255, 0.08);
+  border-left: 5px solid var(--accent);
+  padding: 18px;
+  border-radius: 10px;
+  margin: 20px 0;
+  color: var(--text-light);
+}
+
+.result-box h3 {
+  color: var(--white);
+  margin-bottom: 8px;
+}
+
+.result-box p {
+  margin: 6px 0;
+  font-size: 1rem;
+}
+
+hr {
+  border: 0;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.1);
+  margin: 30px 0;
+}
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(15, 32, 39, 0.8);
+  backdrop-filter: blur(4px);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.popup-content {
+  text-align: center;
+  color: white;
+}
+
+.spinner {
+  border: 6px solid rgba(255, 255, 255, 0.1);
+  border-top: 6px solid #00d4ff;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: spin 1s linear infinite;
+  margin: 20px auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Mobile Responsive */
+@media (max-width: 480px) {
+  .container {
+    padding: 20px;
+  }
+
+  .page-title {
+    font-size: 1.6rem;
+  }
+
+  .user-info {
+    font-size: 1rem;
+  }
+
+  .btn {
+    width: 100%;
+    justify-content: center;
+    font-size: 1.05rem;
+  }
+
+  input[type="number"],
+  input[type="text"],
+  input[type="password"] {
+    width: 88%;
+    font-size: 1.1rem;
+    padding: 14px;
+  }
+
+  .result-box {
+    font-size: 0.95rem;
+  }
+}

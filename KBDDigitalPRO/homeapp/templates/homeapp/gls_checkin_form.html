@@ -1,0 +1,330 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GLS Check-In Form</title>
+  <link rel="stylesheet" href="{% static 'css/gls_checkin.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <style>
+    * { box-sizing: border-box; }
+
+    html, body {
+      height: auto;
+      min-height: 100vh;
+      overflow-y: auto !important;
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(to right, #001f3f, #0074d9);
+      color: white;
+    }
+
+    #intro-video-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: black;
+      z-index: 9999;
+    }
+
+    #intro-video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    @keyframes fadeOut {
+      from { opacity: 1; }
+      to { opacity: 0; visibility: hidden; }
+    }
+
+    #intro-video-container.fade-out {
+      animation: fadeOut 1s ease forwards;
+    }
+
+    .wrapper {
+      max-width: 600px;
+      margin: 40px auto;
+      padding: 25px 20px;
+      background: rgba(0, 0, 0, 0.65);
+      border-radius: 15px;
+      box-shadow: 0 0 20px #00cfff;
+      position: relative;
+      z-index: 1;
+    }
+
+    .wrapper img {
+      width: 220px;
+      margin-bottom: 10px;
+    }
+
+    h2, h3 { text-align: center; }
+
+    .terms-box {
+      background: rgba(255,255,255,0.05);
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      color: #e6f7ff;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .btn-pdf {
+      margin: 10px 5px;
+      padding: 10px 16px;
+      background: #00cfff;
+      border: none;
+      color: black;
+      font-weight: 600;
+      border-radius: 20px;
+      cursor: pointer;
+    }
+
+    input[type="datetime-local"],
+    input[type="tel"] {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: none;
+      font-size: 1rem;
+      margin-top: 8px;
+      margin-bottom: 18px;
+    }
+
+    .radio-group, .checkbox-group {
+      margin: 10px 0 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .radio-group label, .checkbox-group label {
+      background: rgba(255, 255, 255, 0.08);
+      padding: 8px 14px;
+      border-radius: 25px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .radio-group label:hover,
+    .checkbox-group label:hover {
+      background: rgba(0, 255, 255, 0.2);
+    }
+
+    .radio-group input,
+    .checkbox-group input {
+      margin-right: 8px;
+    }
+
+    .error-box {
+      background: rgba(255, 50, 50, 0.2);
+      border: 1px solid #ff4d4d;
+      padding: 10px 15px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+    }
+
+    .error-message {
+      color: #ffdddd;
+      font-weight: bold;
+    }
+
+    #block-msg {
+      color: #ff9999;
+      font-weight: bold;
+      margin-top: 10px;
+      display: none;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      background: #00cfff;
+      border: none;
+      border-radius: 25px;
+      color: black;
+      font-weight: bold;
+      cursor: pointer;
+      display: block;
+      margin: 30px auto 0;
+    }
+
+    @media screen and (max-width: 768px) {
+      .wrapper { margin: 20px; padding: 15px; }
+      .btn-pdf { width: 100%; margin: 10px 0; }
+      .radio-group, .checkbox-group { flex-direction: column; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Opening Animation -->
+  <div id="intro-video-container">
+    <video id="intro-video" autoplay muted playsinline>
+      <source id="intro-video-source" src="" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+  </div>
+
+  <!-- Main Check-In Form -->
+  <div class="wrapper">
+    <img src="{% static 'images/Welcome.png' %}" alt="GLS Welcome" /><br>
+    <img src="{% static 'images/GLSLogo.png' %}" alt="GLS Logo" />
+    <h3 style="color: #c8ec04;">{{ user.Name }}</h3>
+
+    {% if messages %}
+      <div class="error-box">
+        {% for message in messages %}
+          <p class="error-message">{{ message }}</p>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <form method="post">
+      {% csrf_token %}
+
+      <div class="terms-box" id="terms-content">
+  <h4 style="color: #00cfff;"><i class="fa fa-info-circle"></i> Terms & Conditions:</h4>
+  <ul>
+    <li>All participants must arrive on time and report at the check-in desk.</li>
+    <li>ID verification will be mandatory at the venue.</li>
+    <li>Respect the event guidelines and maintain discipline.</li>
+    <li>Mobile usage will be restricted during sessions.</li>
+    <li>No replacement for missed sessions.</li>
+    <li>Organizer reserves the right to modify the schedule if necessary.</li>
+  </ul>
+
+  <h4 style="color: #00cfff;"><i class="fa fa-calendar-check"></i> Check-In & Check-Out:</h4>
+  <ul>
+    <li><strong>Check-in:</strong></li>
+    <ul>
+      <li>Day: 1 day before your batch starts</li>
+      <li>Time: After 4:00 PM</li>
+    </ul>
+    <li><strong>Check-out:</strong></li>
+    <ul>
+      <li>Day: On the last day (Day 3) of your batch</li>
+      <li>Time: 9:00 AM</li>
+      <li>Please bring all your luggage with you to the conference room on Day 3 before the session starts</li>
+    </ul>
+  </ul>
+
+  <h4 style="color: #00cfff;"><i class="fa fa-clock"></i> GLS Daily Schedule:</h4>
+  <ul>
+    <li>Breakfast: 6:30 AM – 9:00 AM</li>
+    <li>Meeting Begins: 9:15 AM</li>
+    <li>AMT Session: 11:00 AM – 11:15 AM</li>
+    <li>Lunch: 1:00 PM – 2:00 PM</li>
+    <li>Hi-Tea: 5:00 PM – 5:30 PM</li>
+    <li>Meeting Ends: 7:00 PM</li>
+    <li>Dinner: 7:30 PM – 9:00 PM</li>
+    <li>On Day 3, the meeting will conclude at 3:00 PM</li>
+  </ul>
+
+  <h4 style="color: #00cfff;"><i class="fa fa-suitcase"></i> What to Bring:</h4>
+  <ul>
+    <li>A new diary and pen</li>
+    <li>Your last year's Karma Kundali</li>
+    <li>Your SAFAL Card 3</li>
+    <li>Rank Badge pinned to your shirt</li>
+  </ul>
+
+  <h4 style="color: #00cfff;"><i class="fa fa-exclamation-triangle"></i> Important Notes:</h4>
+  <ul>
+    <li>Room allotments are final and cannot be changed</li>
+    <li>Your Batch Number and Seat Number are pre-assigned and non-transferable</li>
+    <li>Check-in and check-out times are fixed and must be followed strictly</li>
+  </ul>
+</div>
+
+      <label><i class="fas fa-check-circle"></i> Do you agree to the Terms & Conditions?</label>
+      <div class="radio-group">
+        <label><input type="radio" name="terms_agree" value="yes" id="terms-yes" onchange="handleTermsSelection()" required> Yes</label>
+        <label><input type="radio" name="terms_agree" value="no" onchange="handleTermsSelection()"> No</label>
+      </div>
+
+      {% comment %} <a href="{% static 'pdf/instruction.pdf' %}" class="btn-pdf" download>📄 Download PDF</a> {% endcomment %}
+
+      <div id="arrival-section" style="display:none;">
+        <label><i class="fas fa-clock"></i> Expected Arrival Time at the Venue:</label>
+        <input type="datetime-local" name="arrival" id="arrival" required min="2025-05-20T00:00" max="2025-05-29T23:59">
+
+        <label><i class="fas fa-question-circle"></i> Is this your first GLS event?</label>
+        <div class="radio-group">
+          <label><input type="radio" name="first_time" value="yes" required> Yes</label>
+          <label><input type="radio" name="first_time" value="no"> No</label>
+        </div>
+
+        <label><i class="fas fa-car-side"></i> Mode of Transport:</label>
+        <div class="checkbox-group">
+          <label><input type="checkbox" name="transport" value="Flight"> ✈️ Flight</label>
+          <label><input type="checkbox" name="transport" value="Train"> 🚆 Train</label>
+          <label><input type="checkbox" name="transport" value="Bus"> 🚌 Bus</label>
+          <label><input type="checkbox" name="transport" value="Car"> 🚗 Car</label>
+        </div>
+
+        <label for="emergency_contact"><i class="fas fa-phone-alt"></i> Emergency Contact Number:</label>
+        <input type="tel" name="emergency_contact" id="emergency_contact" placeholder="Enter 10-digit phone number" pattern="[0-9]{10}" maxlength="10" required>
+      </div>
+
+      <div id="block-msg">
+        ⚠️ You must agree to the Terms & Conditions to attend the GLS-IV Event.
+      </div>
+
+      <button type="submit" class="btn" id="submit-btn" style="display: none;">Submit & Check-In</button>
+    </form>
+  </div>
+
+  <!-- Scripts -->
+  <script>
+    function handleTermsSelection() {
+      const agreeYes = document.getElementById('terms-yes');
+      const arrivalSection = document.getElementById('arrival-section');
+      const submitBtn = document.getElementById('submit-btn');
+      const blockMsg = document.getElementById('block-msg');
+
+      if (agreeYes.checked) {
+        arrivalSection.style.display = 'block';
+        blockMsg.style.display = 'none';
+        submitBtn.style.display = 'block';
+      } else {
+        arrivalSection.style.display = 'none';
+        blockMsg.style.display = 'block';
+        submitBtn.style.display = 'none';
+      }
+    }
+
+    // Dynamically set video source based on screen size
+    document.addEventListener("DOMContentLoaded", function () {
+      const video = document.getElementById("intro-video");
+      const source = document.getElementById("intro-video-source");
+
+      const desktopVideo = "{% static 'videos/Welcome1.mp4' %}";
+      const mobileVideo = "{% static 'videos/Welcome2.mp4' %}";
+
+      source.src = window.innerWidth <= 768 ? mobileVideo : desktopVideo;
+      video.load();
+    });
+
+    // Intro Video Handler
+    const video = document.getElementById('intro-video');
+    const container = document.getElementById('intro-video-container');
+    video.onended = () => {
+      container.classList.add('fade-out');
+      setTimeout(() => {
+        container.style.display = 'none';
+      }, 1000);
+    };
+  </script>
+</body>
+</html>

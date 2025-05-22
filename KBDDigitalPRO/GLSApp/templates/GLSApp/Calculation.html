@@ -1,0 +1,317 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>GLS - Calculation</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="{% static 'css/gls_style.css' %}">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+
+  <style>
+    :root {
+      --accent: #0ff;
+      --white: #fff;
+    }
+
+    body {
+      background: linear-gradient(135deg, #0a2540, #007bff);
+      font-family: 'Poppins', sans-serif;
+      color: var(--white);
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 20px;
+    }
+
+    .user-info {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .page-title {
+      text-align: center;
+      font-size: 28px;
+      margin-bottom: 30px;
+    }
+
+    .btn {
+      background: rgba(0, 255, 255, 0.2);
+      color: var(--white);
+      border: 1px solid var(--accent);
+      padding: 10px 20px;
+      border-radius: 30px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s;
+      margin: 10px 0;
+      display: inline-block;
+    }
+
+    .btn:hover {
+      background: rgba(0, 255, 255, 0.4);
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 20px;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+      color: var(--white);
+      overflow: hidden;
+      margin: 30px 0;
+      transition: max-height 0.7s ease, opacity 0.5s ease, padding 0.5s ease;
+      max-height: 0;
+      opacity: 0;
+      padding: 0 25px;
+    }
+
+    .card.active {
+      max-height: 500px;
+      opacity: 1;
+      padding: 25px;
+    }
+
+    .card.collapsed {
+      max-height: 60px;
+      padding: 12px 25px;
+      cursor: pointer;
+      opacity: 0.7;
+    }
+
+    .card h3 {
+      display: flex;
+      align-items: center;
+      font-size: 1.5rem;
+      background: linear-gradient(135deg, #00c6ff, #0072ff);
+      padding: 12px 20px;
+      border-radius: 15px;
+      font-weight: 600;
+      margin-top: 0;
+      margin-bottom: 20px;
+      color: #fff;
+      box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.1);
+    }
+
+    .card h3 i {
+      margin-right: 10px;
+      font-size: 1.3rem;
+    }
+
+    .performance-score {
+      font-size: 2rem;
+      font-weight: bold;
+      color: var(--accent);
+      margin: 10px 0;
+      animation: fadeIn 0.8s ease-in-out;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 1rem;
+      margin-top: 5px;
+      animation: fadeIn 0.8s ease-in-out;
+    }
+
+    .status-awesome {
+      background: rgba(0, 255, 127, 0.2);
+      color: #00ff7f;
+      border: 1px solid #00ff7f;
+    }
+
+    .status-good {
+      background: rgba(0, 191, 255, 0.2);
+      color: #00bfff;
+      border: 1px solid #00bfff;
+    }
+
+    .status-average {
+      background: rgba(255, 215, 0, 0.2);
+      color: #ffd700;
+      border: 1px solid #ffd700;
+    }
+
+    .status-bad {
+      background: rgba(255, 69, 58, 0.2);
+      color: #ff453a;
+      border: 1px solid #ff453a;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    #popup-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(15, 32, 39, 0.9);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    #popup-box {
+      background: rgba(255, 255, 255, 0.1);
+      border: 2px solid var(--accent);
+      border-radius: 20px;
+      padding: 40px;
+      text-align: center;
+      backdrop-filter: blur(10px);
+      color: var(--white);
+    }
+
+    .spinner-numbers {
+      font-size: 2.4rem;
+      font-weight: bold;
+      margin-bottom: 15px;
+      letter-spacing: 2px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="popup-overlay">
+    <div id="popup-box">
+      <div class="spinner-numbers" id="numberSpinner">0000</div>
+      <p><i class="fas fa-cogs fa-spin"></i> Calculating values, please wait...</p>
+    </div>
+  </div>
+
+  <div class="container">
+    <h4 class="user-info"><i class="fas fa-user-circle"></i> {{ user.Name }}</h4>
+    <h2 class="page-title"><i class="fas fa-flask"></i> Formulas</h2>
+
+    <!-- Registration Button -->
+    {% if not is_registration_done %}
+      <form method="post">{% csrf_token %}
+        <button type="button" class="btn" onclick="showPopupAndSubmit(this)">
+          <i class="fa fa-registered"></i> Registration Performance
+        </button>
+        <input type="hidden" name="registration_btn" value="1">
+      </form>
+    {% endif %}
+
+    <!-- Registration Card -->
+    <div class="card" id="card-registration" onclick="expandCard('card-registration')">
+      {% if is_registration_done %}
+        <h3><i class="fas fa-registered"></i> Registration Performance</h3>
+        <div class="performance-score">{{ registration_performance }}%</div>
+        <div class="status-badge {% if reg_status == 'Awesome😃' %}status-awesome
+                                {% elif reg_status == 'Good🙂' %}status-good
+                                {% elif reg_status == 'Average😐' %}status-average
+                                {% else %}status-bad{% endif %}">
+          {{ reg_status }}
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Repurchase Button -->
+    {% if is_registration_done and not is_repurchase_done %}
+      <form method="post">{% csrf_token %}
+        <button type="button" class="btn" onclick="showPopupAndSubmit(this)">
+          <i class="fa fa-sync-alt"></i> Repurchase
+        </button>
+        <input type="hidden" name="repurchase_btn" value="1">
+      </form>
+    {% endif %}
+
+    <!-- Repurchase Card -->
+    <div class="card" id="card-repurchase" onclick="expandCard('card-repurchase')">
+      {% if is_repurchase_done %}
+        <h3><i class="fas fa-sync-alt"></i> Repurchase</h3>
+        <div class="performance-score">{{ repurchase }}</div>
+        <div class="status-badge {% if rep_status == 'Awesome😃' %}status-awesome
+                                {% elif rep_status == 'Good🙂' %}status-good
+                                {% elif rep_status == 'Average😐' %}status-average
+                                {% else %}status-bad{% endif %}">
+          {{ rep_status }}
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Team Button -->
+    {% if is_repurchase_done and not is_team_done %}
+      <form method="post">{% csrf_token %}
+        <button type="button" class="btn" onclick="showPopupAndSubmit(this)">
+          <i class="fa fa-users"></i> Team Performance
+        </button>
+        <input type="hidden" name="team_btn" value="1">
+      </form>
+    {% endif %}
+
+    <!-- Team Card -->
+    <div class="card" id="card-team" onclick="expandCard('card-team')">
+      {% if is_team_done %}
+        <h3><i class="fas fa-users"></i> Team Performance</h3>
+        <div class="performance-score">{{ team_performance }}</div>
+        <div class="status-badge {% if team_perf_status == 'Awesome😃' %}status-awesome
+                                {% elif team_perf_status == 'Good🙂' %}status-good
+                                {% elif team_perf_status == 'Average😐' %}status-average
+                                {% else %}status-bad{% endif %}">
+          {{ team_perf_status }}
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Next Button -->
+    {% if is_team_done %}
+      <form method="get" action="{% url 'ist_calculation' %}">
+        <button class="btn"><i class="fa fa-arrow-right"></i> Next</button>
+      </form>
+    {% endif %}
+  </div>
+
+  <script>
+    function showPopupAndSubmit(button) {
+      const overlay = document.getElementById('popup-overlay');
+      const spinner = document.getElementById('numberSpinner');
+      overlay.style.display = 'flex';
+
+      const interval = setInterval(() => {
+        const randomNum = Math.floor(Math.random() * 99999);
+        spinner.innerText = randomNum.toString().padStart(5, '0');
+      }, 50);
+
+      setTimeout(() => {
+        clearInterval(interval);
+        overlay.style.display = 'none';
+        button.closest('form').submit();
+      }, 2500);
+    }
+
+    function expandCard(id) {
+      const cards = document.querySelectorAll('.card');
+      cards.forEach(card => {
+        if (card.id === id) {
+          card.classList.add('active');
+          card.classList.remove('collapsed');
+          card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } else {
+          card.classList.remove('active');
+          if (card.innerText.trim() !== '') {
+            card.classList.add('collapsed');
+          }
+        }
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const expandId = "{{ expand_card|default:'' }}";
+      if (expandId) expandCard(expandId);
+    });
+  </script>
+</body>
+</html>

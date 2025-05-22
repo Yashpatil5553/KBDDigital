@@ -1,0 +1,146 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IST Projection Calculator</title>
+  <link rel="stylesheet" href="{% static 'css/gls_style.css' %}">
+  <script src="{% static 'js/gls_script.js' %}" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" defer></script>
+
+  <style>
+    #popup-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(15, 32, 39, 0.9);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    #popup-box {
+      background: rgba(255, 255, 255, 0.1);
+      border: 2px solid var(--accent);
+      border-radius: 20px;
+      padding: 40px;
+      text-align: center;
+      backdrop-filter: blur(10px);
+      color: var(--white);
+    }
+
+    .spinner-numbers {
+      font-size: 2.4rem;
+      font-weight: bold;
+      margin-bottom: 15px;
+      letter-spacing: 2px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Popup Overlay -->
+  <div id="popup-overlay">
+    <div id="popup-box">
+      <div class="spinner-numbers" id="numberSpinner">00000</div>
+      <p><i class="fas fa-cogs fa-spin"></i> Calculating values, please wait...</p>
+    </div>
+  </div>
+
+  <div class="wrapper">
+    <div class="container text-center">
+
+      <p class="user-info"><i class="fas fa-user-circle"></i> {{ user.Name }}</p>
+      <h2 class="page-title"><i class="fa fa-chart-line"></i> IST Calculator</h2>
+      <h4>Please select base for calculations:</h4>
+
+      <!-- FORM starts -->
+      <form method="post" id="calculateForm">
+        {% csrf_token %}
+
+        <div class="radio-group1">
+          <label><input type="radio" name="base" value="income" onclick="showInput('income')" required> Income</label>
+          <label><input type="radio" name="base" value="sales" onclick="showInput('sales')"> Sales</label>
+          <label><input type="radio" name="base" value="team" onclick="showInput('team')"> Team</label>
+        </div>
+
+        <div id="inputDiv" class="center-box" style="display: none;">
+          <label id="inputLabel">Enter Value:</label><br>
+          <input type="number" id="inputField" name="input_value" step="0.01" oninput="checkInputValue()" required>
+          <br>
+          <!-- Hidden input to ensure calculate is sent on form.submit() -->
+          <input type="hidden" name="calculate" value="1">
+          <button type="submit" id="calculateBtn" disabled class="btn">
+            <i class="fa fa-play"></i> Calculate
+          </button>
+        </div>
+      </form>
+
+      <!-- RESULT BLOCK -->
+      {% if result %}
+        <div class="result-box">
+          <h3><i class="fa fa-bolt"></i> Calculation Result</h3>
+          <p><strong>Base:</strong> {{ result.base_label }}: {{ result.input|floatformat:0 }}</p>
+          {% if result.income %}
+            <p><i class="fa fa-money-bill-wave"></i> Target Income: ₹{{ result.income|floatformat:0 }}</p>
+          {% endif %}
+          {% if result.sales %}
+            <p><i class="fas fa-chart-line"></i> Target Sales: ₹{{ result.sales|floatformat:0 }}</p>
+          {% endif %}
+          {% if result.team %}
+            <p><i class="fa fa-users"></i> Target Team: {{ result.team|floatformat:0 }}</p>
+          {% endif %}
+        </div>
+
+        <form method="post">
+          {% csrf_token %}
+          <button type="submit" name="save_next" class="btn">
+            <i class="fa fa-save"></i> Save & Next
+          </button>
+        </form>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- JS Script -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const calculateBtn = document.getElementById("calculateBtn");
+      const form = document.getElementById("calculateForm");
+
+      if (calculateBtn && form) {
+        calculateBtn.addEventListener("click", function (e) {
+          e.preventDefault();
+
+          const baseSelected = form.querySelector('input[name="base"]:checked');
+          const inputField = document.getElementById("inputField");
+
+          if (!baseSelected || !inputField.value) {
+            alert("Please select a base and enter a value.");
+            return;
+          }
+
+          const overlay = document.getElementById('popup-overlay');
+          const spinner = document.getElementById('numberSpinner');
+          overlay.style.display = 'flex';
+
+          const interval = setInterval(() => {
+            const randomNum = Math.floor(Math.random() * 99999);
+            spinner.innerText = randomNum.toString().padStart(5, '0');
+          }, 50);
+
+          setTimeout(() => {
+            clearInterval(interval);
+            overlay.style.display = 'none';
+            form.submit();
+          }, 2500);
+        });
+      }
+    });
+  </script>
+</body>
+</html>

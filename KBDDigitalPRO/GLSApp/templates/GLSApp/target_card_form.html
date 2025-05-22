@@ -1,0 +1,157 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Target Card</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="{% static 'css/target_card.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <script>
+    let currentIndex = 0;
+    function showNextSection() {
+      const sections = document.querySelectorAll('.section');
+      if (currentIndex < sections.length - 1) {
+        sections[currentIndex].style.display = 'none';
+        currentIndex++;
+        sections[currentIndex].style.display = 'block';
+        toggleButtons(sections);
+        updateProgress(sections);
+      }
+    }
+    function showPrevSection() {
+      const sections = document.querySelectorAll('.section');
+      if (currentIndex > 0) {
+        sections[currentIndex].style.display = 'none';
+        currentIndex--;
+        sections[currentIndex].style.display = 'block';
+        toggleButtons(sections);
+        updateProgress(sections);
+      }
+    }
+    function toggleButtons(sections) {
+      document.getElementById('prevBtn').style.display = currentIndex === 0 ? 'none' : 'inline-block';
+      document.getElementById('nextBtn').style.display = currentIndex === sections.length - 1 ? 'none' : 'inline-block';
+      document.getElementById('redirectBtn').style.display = currentIndex === sections.length - 1 ? 'inline-block' : 'none';
+    }
+    function updateProgress(sections) {
+      const dots = document.querySelectorAll('.dot');
+      dots.forEach((dot, i) => {
+        dot.classList.toggle('active', i === currentIndex);
+      });
+    }
+    window.onload = function () {
+      const sections = document.querySelectorAll('.section');
+      const dotsContainer = document.getElementById('dotsContainer');
+      for (let i = 0; i < sections.length; i++) {
+        const dot = document.createElement('div');
+        dot.className = 'dot' + (i === 0 ? ' active' : '');
+        dotsContainer.appendChild(dot);
+      }
+      sections.forEach((s, i) => s.style.display = i === 0 ? 'block' : 'none');
+      toggleButtons(sections);
+      updateProgress(sections);
+    };
+  </script>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="container">
+      <h2 class="title"><i class="fas fa-chart-pie"></i> Target Card Overview</h2>
+      <div class="progress-dots" id="dotsContainer"></div>
+
+      <div class="section">
+        <h3><i class="fas fa-industry" title="ASM and HSM performance"></i> Sectorwise Sales</h3>
+          <table>
+            <tr>
+              <th><i class="fas fa-tractor" title="ASM"></i> Agriculture</th>
+              <td><span class="currency">₹{{ target_AGR|floatformat:0 }}</span></td>
+            </tr>
+            <tr>
+              <th><i class="fas fa-heartbeat" title="HSM"></i> Swastham</th>
+              <td><span class="currency">₹{{ target_SWA|floatformat:0 }}</span></td>
+            </tr>
+            <tr>
+              <th><i class="fas fa-leaf" title="HSM"></i> Ayurman</th>
+              <td><span class="currency">₹{{ target_AYU|floatformat:0 }}</span></td>
+            </tr>
+            <tr>
+              <th><i class="fas fa-tshirt" title="HSM"></i> Paridhan</th>
+              <td><span class="currency">₹{{ target_PAR|floatformat:0 }}</span></td>
+            </tr>
+</table>
+
+        {% comment %} <a href="{% url 'ist_calculation' %}" class="btn"><i class="fa fa-arrow-left"></i> Back</a> {% endcomment %}
+      </div>
+
+      <div class="section">
+        <h3><i class="fas fa-bullseye" title="Goal Setting Triangle"></i> Goal Setting Triangle</h3>
+        <table>
+          <tr><th>Rank</th><th>Target</th></tr>
+          <tr><td class="region-label">AD</td><td><span class="currency">{{ target_ad|floatformat:0 }}</span></td></tr>
+          <tr><td class="region-label">OBS</td><td><span class="currency">{{ target_obs|floatformat:0 }}</span></td></tr>
+          <tr><td class="region-label">KV</td><td><span class="currency">{{ target_kv|floatformat:0 }}</span></td></tr>
+          <tr><td class="region-label">VV</td><td><span class="currency">{{ target_vv|floatformat:0 }}</span></td></tr>
+          <tr><td class="region-label">NGL</td><td><span class="currency">{{ target_ngl|floatformat:0 }}</span></td></tr>
+          <tr><td class="region-label">NID</td><td><span class="currency">{{ target_nid|floatformat:0 }}</span></td></tr>
+          <tr><td class="region-label">DTR</td><td><span class="currency">{{ target_dtr|floatformat:0 }}</span></td></tr>
+        </table>
+      </div>
+
+      <div class="section">
+        <h3><i class="fas fa-tachometer-alt" title="Registration Per Month"></i> RPM</h3>
+        <table>          
+          <tr><th>Average RPM</th><td><span class="rpm">{{ target_rpm|floatformat:0 }}</span></td></tr>
+          <tr><th>Total RPM</th><td><span class="Team Target">{{ target_team1|floatformat:0 }}</span></td></tr>
+        </table>
+      </div>
+
+      <div class="section">
+        <h3><i class="fas fa-project-diagram" title="Income, Sales, Team (IST)"></i> IST</h3>
+        <table>
+          <tr>
+            <th><i class="fas fa-rupee-sign" title="Income"></i> Income (I)</th>
+            <th><i class="fas fa-chart-line" title="Sales"></i> Sales (S)</th>
+            <th><i class="fas fa-users" title="Team"></i> Team (T)</th>
+          </tr>
+          <tr>
+            <td><span class="currency">₹{{ target_income|floatformat:0 }}</span></td>
+            <td><span class="currency">₹{{ target_sales|floatformat:0 }}</span></td>
+            <td><span class="bold">{{ target_team|floatformat:0 }}</span></td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="section">
+        <h3><i class="fas fa-store" title="Branch Offices"></i> Branch Office</h3>
+        <table>
+          <tr><td><span class="bold">{{ target_bo|floatformat:0 }}</span></td></tr>
+        </table>
+      </div>
+
+      <div class="section">
+        <h3><i class="fas fa-map-marked-alt" title="TURPHH Targets"></i> TURPHH - Registration</h3>
+        <table>          
+          <tr><td class="region-label">T</td><td><span class="currency">{{ tel_target|floatformat:0 }}</span></td></tr>
+          <tr><td class="region-label">U</td><td><span class="currency">{{ up_target|floatformat:0 }}</span></td></tr>
+          <tr><td class="region-label">R</td><td><span class="currency">{{ rj_target|floatformat:0 }}</span></td></tr>
+          <tr><td class="region-label">P</td><td><span class="currency">{{ pb_target|floatformat:0 }}</span></td></tr>
+          <tr><td class="region-label">H</td><td><span class="currency">{{ hr_target|floatformat:0 }}</span></td></tr>
+          <tr><td class="region-label">H</td><td><span class="currency">{{ hp_target|floatformat:0 }}</span></td></tr>
+          <tr><th>Total</th><th>{{ TURPHH_target|floatformat:0 }}</th></tr>          
+        </table>
+      </div>
+
+      
+
+      <div class="btn-group">
+        <button class="btn" id="prevBtn" onclick="showPrevSection()"><i class="fa fa-arrow-left"></i> Back</button>
+        <button class="btn" id="nextBtn" onclick="showNextSection()"><i class="fa fa-arrow-right"></i> Next</button>
+        <form action="{% url 'input_values' %}" method="get" style="display:inline;">
+          <button type="submit" class="btn" id="redirectBtn"><i class="fa fa-arrow-right"></i> Next</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

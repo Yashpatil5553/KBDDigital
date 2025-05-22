@@ -1,0 +1,285 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Target Card Summary</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="{% static 'css/target_summary.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+  <style>
+
+  body {
+    background: linear-gradient(135deg, #001f3f, #0074D9);
+    background-attachment: fixed;
+    background-size: cover;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+    font-family: 'Poppins', sans-serif;
+    color: #fff;
+    margin: 0;
+    padding: 0;
+  }
+    #preloader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(10, 20, 30, 0.95);
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      flex-direction: column;
+      font-family: 'Poppins', sans-serif;
+      text-align: center;
+    }
+
+    .loader-text i {
+      font-size: 3rem;
+      margin-bottom: 15px;
+      color: #00cfff;
+    }
+
+    .loader-text p {
+      font-size: 1.2rem;
+      color: #e0f7fa;
+    }
+
+    .wrapper {
+      width: 100%;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      margin: 5px;
+      border-radius: 5px;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      background-color: #0056b3;
+    }
+
+    .btn-group {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px; /* adds spacing between buttons */
+      margin-top: 30px;
+    }
+
+    .btn {
+      flex: 1 1 auto;        /* allow to shrink/grow */
+      min-width: 120px;      /* prevent being too small */
+      max-width: 180px;      /* prevent being too wide */
+      text-align: center;
+      box-sizing: border-box;
+    }
+
+    @media (max-width: 480px) {
+      .btn {
+        width: 100%;
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Loader -->
+<div id="preloader">
+  <div class="loader-text">
+    <i class="fas fa-cogs fa-spin"></i>
+    <p>We are preparing your Target Card, Please wait...</p>
+  </div>
+</div>
+
+<div class="wrapper">
+  <div class="container" id="capture-area">
+    <h2 class="title"><i class="fas fa-id-card-alt"></i> Target Card Summary</h2>
+
+    {% if error %}
+      <p class="error">{{ error }}</p>
+    {% else %}
+      <div class="info-box">
+        <p><strong>Name:</strong> <span class="value">{{ user_info.Name }}</span></p>
+        <p><strong>Folio Number:</strong> <span class="value">{{ user_info.Folio_Number }}</span></p>
+        <p><strong>Code:</strong> <span class="value">{{ user_info.Code }}</span></p>
+      </div>
+
+
+      <div class="section">
+        <h3><i class="fas fa-industry"></i> Sectorwise Sales</h3>
+        <table>
+          <tr><th><i class="fas fa-tractor"></i> Agriculture</th><td class="currency">₹{{ data.Target_AGR|floatformat:0 }}</td></tr>
+          <tr><th><i class="fas fa-heartbeat"></i> Swastham</th><td class="currency">₹{{ data.Target_SWA|floatformat:0 }}</td></tr>
+          <tr><th><i class="fas fa-leaf"></i> Ayurman</th><td class="currency">₹{{ data.Target_AYU|floatformat:0 }}</td></tr>
+          <tr><th><i class="fas fa-tshirt"></i> Paridhan</th><td class="currency">₹{{ data.Target_PAR|floatformat:0 }}</td></tr>
+        </table>
+      </div>
+
+      <div class="section">
+        <h3><i class="fas fa-bullseye"></i> Goal Setting Triangle</h3>
+        <table>
+          <tr><th>AD</th><td class="rpm">{{ data.Target_AD|floatformat:0 }}</td></tr>
+          <tr><th>OBS</th><td class="rpm">{{ data.Target_OBS|floatformat:0 }}</td></tr>
+          <tr><th>KV</th><td class="rpm">{{ data.Target_KV|floatformat:0 }}</td></tr>
+          <tr><th>VV</th><td class="rpm">{{ data.Target_VV|floatformat:0 }}</td></tr>
+          <tr><th>S-NGL</th><td class="rpm">{{ data.Star_NGL_Target|floatformat:0 }}</td></tr>
+          <tr><th>NGL</th><td class="rpm">{{ data.Target_NGL|floatformat:0 }}</td></tr>
+          <tr><th>NID</th><td class="rpm">{{ data.Target_NID|floatformat:0 }}</td></tr>
+          <tr><th>DTR</th><td class="rpm">{{ data.Target_DTR|floatformat:0 }}</td></tr>
+          <tr><th>CMR</th><td class="rpm">{{ data.CMR_Target|floatformat:0 }}</td></tr>
+        </table>
+      </div>
+
+      <div class="section">
+        <h3><i class="fas fa-pencil-ruler"></i> SGA</h3>
+        <table>
+          <tr><th>Target SGA</th><td class="bold">{{ data.SGA|floatformat:0 }}</td></tr>
+        </table>
+      </div>
+
+
+      <div class="section">
+        <h3><i class="fas fa-project-diagram"></i> IST</h3>
+        <table>
+          <tr><th><i class="fa fa-money-bill-wave"></i> Income</th><td class="currency">₹{{ data.Target_Income|floatformat:0 }}</td></tr>
+          <tr><th><i class="fas fa-chart-line"></i> Sales</th><td class="currency">₹{{ data.Target_Sales|floatformat:0 }}</td></tr>
+          <tr><th><i class="fa fa-users"></i> Team</th><td class="rpm">{{ data.Target_Team|floatformat:0 }}</td></tr>
+        </table>
+      </div>
+
+      <div class="section">
+        <h3><i class="fas fa-store"></i> Branch Office</h3>
+        <table>
+          <tr><th>Target Branch Offices</th><td class="bold">{{ data.Target_BO|floatformat:0 }}</td></tr>
+        </table>
+      </div>
+
+
+      <div class="section">
+        <h3><i class="fas fa-globe"></i> IK</h3>
+        <table>
+          <tr><th>Target IK</th><td class="bold">{{ data.IK|floatformat:0 }}</td></tr>
+        </table>
+      </div>
+
+      <div class="section">
+        <h3><i class="fas fa-university"></i> PP</h3>
+        <table>
+          <tr><th>Target PP</th><td class="bold">{{ data.PP|floatformat:0 }}</td></tr>
+        </table>
+      </div>
+
+      <div class="section">
+        <h3><i class="fas fa-tachometer-alt"></i> RPM</h3>
+        <table>
+          <tr><th>Average RPM</th><td class="rpm">{{ data.Target_RPM|floatformat:0 }}</td></tr>
+          <tr><th>Total RPM</th><td class="rpm">{{ data.Target_Team1|floatformat:0 }}</td></tr>
+        </table>
+      </div>
+
+      <div class="section">
+        <h3><i class="fas fa-map-marked-alt"></i> TURPHH</h3>
+        <table>
+          <tr><th>TURPHH</th><th>Registration</th><th>BO</th></tr>
+          <tr><th>T</th><td class="rpm">{{ data.TEL_Target|floatformat:0 }}</td><td>{{ data.TEL_BO_Target|floatformat:0 }}</td></tr>
+          <tr><th>U</th><td class="rpm">{{ data.UP_Target|floatformat:0 }}</td><td>{{ data.UP_BO_Target|floatformat:0 }}</td></tr>
+          <tr><th>R</th><td class="rpm">{{ data.RJ_Target|floatformat:0 }}</td><td>{{ data.RJ_BO_Target|floatformat:0 }}</td></tr>
+          <tr><th>P</th><td class="rpm">{{ data.PB_Target|floatformat:0 }}</td><td>{{ data.PB_BO_Target|floatformat:0 }}</td></tr>
+          <tr><th>H</th><td class="rpm">{{ data.HR_Target|floatformat:0 }}</td><td>{{ data.HR_BO_Target|floatformat:0 }}</td></tr>
+          <tr><th>H</th><td class="rpm">{{ data.HP_Target|floatformat:0 }}</td><td>{{ data.HP_BO_Target|floatformat:0 }}</td></tr>
+          <tr><th>Total</th><th class="rpm">{{ data.TURPHH_Target|floatformat:0 }}</th><th>{{ data.TURPHH_BO_Target|floatformat:0 }}</th></tr>  
+        </table>
+      </div>
+
+      <div class="section">
+        <h3><i class="fas fa-shoe-prints"></i> Top Active Leg</h3>
+        <table>
+          <tr><th>Target TAL</th><td class="rpm">{{ data.TAL_Target|floatformat:0 }}</td></tr>
+        </table>
+      </div>
+
+      <div class="section">
+        <h3><i class="fas fa-plane-departure"></i> Mahavir Awards</h3>
+        <table>
+          <tr><th>Target Mahavir Awards</th><td class="bold">{{ data.Mahavir_Award_Target|floatformat:0 }}</td></tr>
+        </table>
+      </div>
+
+      <div class="section">
+        <h3><i class="fas fa-pencil-ruler"></i> CMR Center</h3>
+        <table>
+          <tr><th>Target CMR Centre</th><td class="bold">{{ data.CMR_Centre_Target|floatformat:0 }}</td></tr>
+        </table>
+      </div>
+    {% endif %}
+
+    <div class="btn-group" style="margin-top: 30px;">
+      <a href="{% url 'input_values' %}" class="btn"><i class="fa fa-arrow-left"></i> Back</a>      
+      {% comment %} <button class="btn" id="downloadBtn"><i class="fas fa-download"></i> Download Image</button>
+      <button class="btn" id="shareBtn"><i class="fas fa-share-alt"></i> Share</button> {% endcomment %}
+      <a href="{% url 'finish_target_card' %}" class="btn"><i class="fas fa-rocket"></i> Finish</a>
+    </div>
+  </div>
+</div>
+
+<!-- Script to hide loader -->
+<script>
+  window.addEventListener("load", function () {
+    const preloader = document.getElementById("preloader");
+    const wrapper = document.querySelector(".wrapper");
+
+    setTimeout(() => {
+      preloader.style.display = "none";
+      wrapper.style.display = "flex";
+    }, 4000);
+  });
+</script>
+
+<!-- html2canvas & download/share logic -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+  document.getElementById("downloadBtn").addEventListener("click", function () {
+    html2canvas(document.getElementById("capture-area")).then(canvas => {
+      const link = document.createElement("a");
+      link.download = 'Target_Card_Summary.png';
+      link.href = canvas.toDataURL();
+      link.click();
+    });
+  });
+
+  document.getElementById("shareBtn").addEventListener("click", function () {
+    html2canvas(document.getElementById("capture-area")).then(canvas => {
+      canvas.toBlob(blob => {
+        const file = new File([blob], "Target_Card_Summary.png", { type: "image/png" });
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          navigator.share({
+            title: "Target Card Summary",
+            text: "Here is my Target Card Summary!",
+            files: [file],
+          }).catch(error => alert("Sharing failed: " + error));
+        } else {
+          alert("Sharing not supported on this device/browser.");
+        }
+      });
+    });
+  });
+</script>
+
+</body>
+</html>

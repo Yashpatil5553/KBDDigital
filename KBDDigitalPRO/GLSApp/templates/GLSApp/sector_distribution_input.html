@@ -1,0 +1,58 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Sector Distribution Input</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="{% static 'css/sector_distribution.css' %}">
+  <script src="{% static 'js/sector_distribution.js' %}" defer></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div class="wrapper">
+    <div class="container">
+      <form method="post" id="sectorForm">
+        {% csrf_token %}
+        <div class="step" id="step-sector-distribution">
+          <h2><i class="fas fa-percentage"></i> Sector-wise Sales Distribution</h2>
+          {% if error %}
+            <p class="error">{{ error }}</p>
+          {% endif %}
+
+          <div class="table-container">
+            <table>
+              <tr>
+                <td class="region-label"><i class="fas fa-tractor"></i> Agriculture</td>
+                <td><input type="number" step="0.01" name="agriculture" placeholder="Enter Agriculture %" class="input-box" required value="{{ existing.agriculture_percent|default:'' }}"></td>
+              </tr>
+              <tr>
+                <td class="region-label"><i class="fas fa-heartbeat"></i> Swastham</td>
+                <td><input type="number" step="0.01" name="swastham" placeholder="Enter Swastham %" class="input-box" required value="{{ existing.swastham_percent|default:'' }}"></td>
+              </tr>
+              <tr>
+                <td class="region-label"><i class="fas fa-leaf"></i> Ayurman</td>
+                <td><input type="number" step="0.01" name="ayurman" placeholder="Enter Ayurman %" class="input-box" required value="{{ existing.ayurman_percent|default:'' }}"></td>
+              </tr>
+              <tr>
+                <td class="region-label"><i class="fas fa-tshirt"></i> Paridhan</td>
+                <td><input type="number" step="0.01" name="paridhan" placeholder="Enter Paridhan %" class="input-box" required value="{{ existing.paridhan_percent|default:'' }}"></td>
+              </tr>
+              <tr>
+                <td class="region-label bold">Total</td>
+                <td class="bold"><span id="total" class="status-text">0%</span></td>
+              </tr>
+              <tr>
+                <td class="region-label bold">Remaining</td>
+                <td class="bold"><span id="remaining">100</span>%</td>
+              </tr>
+            </table>
+          </div>
+
+          <br><button type="submit" class="btn"><i class="fa fa-arrow-right"></i> Next</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</body>
+</html>

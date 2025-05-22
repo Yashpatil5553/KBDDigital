@@ -1,0 +1,234 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Already Checked-In</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="{% static 'css/gls_checkin.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    html, body {
+      height: auto;
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #001f3f, #0074D9);
+      color: #fff;
+      text-align: center;
+      overflow-y: auto !important;
+    }
+
+    .wrapper {
+      background: rgba(255,255,255,0.1);
+      padding: 25px;
+      margin: 40px auto;
+      border-radius: 15px;
+      box-shadow: 0 0 15px rgba(0,255,255,0.2);
+      max-width: 500px;
+      width: 90%;
+    }
+
+    .wrapper img {
+      width: 220px;
+      margin-bottom: 10px;
+    }
+
+    .info h2, .info h3 {
+      font-size: 2rem;
+      color: #00ffcc;
+    }
+
+    .info p {
+      margin: 8px 0;
+      font-size: 1rem;
+      text-align: left;
+    }
+
+    .btn {
+      margin: 10px 6px 0;
+      background-color: #00cfff;
+      color: #000;
+      font-weight: bold;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s ease-in-out;
+    }
+
+    .btn:hover {
+      background-color: #00bfff;
+      transform: scale(1.05);
+    }
+
+    canvas#badgeCanvas {
+      display: none;
+    }
+
+    #badge-preview {
+      margin-top: 20px;
+      display: block;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(255,255,255,0.2);
+      max-width: 100%;
+    }
+
+    #print-badge {
+      background: #fff;
+      color: #000;
+      padding: 15px;
+      border-radius: 10px;
+      margin-top: 20px;
+      text-align: left;
+    }
+
+    #print-badge img {
+      display: block;
+      margin: 10px auto;
+    }
+
+    #success-toast {
+      position: fixed;
+      top: 30px;
+      right: 30px;
+      background: #2ecc71;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 30px;
+      font-weight: bold;
+      animation: slideIn 0.5s ease, fadeOut 1s ease 3s forwards;
+      z-index: 9999;
+    }
+
+    @keyframes slideIn {
+      0% { opacity: 0; transform: translateX(100px); }
+      100% { opacity: 1; transform: translateX(0); }
+    }
+
+    @keyframes fadeOut {
+      to { opacity: 0; transform: translateY(-30px); }
+    }
+
+    @media screen and (max-width: 600px) {
+      .wrapper {
+        padding: 20px 15px;
+      }
+
+      .btn {
+        width: 100%;
+        margin-top: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div id="success-toast">🕒 Already Checked-In!</div>
+
+<div class="wrapper">
+  <img src="{% static 'images/GLSLogo.png' %}" alt="GLS Logo" />
+  <div class="info">
+    <h3>🕒 Already Checked-In</h3>
+
+    <div id="print-badge">
+      <p><strong>Name:</strong> {{ user.Name }}</p>
+      <p><strong>Folio Number:</strong> {{ user.Folio_Number }}</p>
+      <p><strong>Batch:</strong> {{ gls.Batch }}</p>
+      <p><strong>Seat Number:</strong> {{ gls.Seat_Number }}</p>
+      <p><strong>Expected Arrival:</strong> {{ gls.Expected_Arrival|date:"d-m-Y h:i A" }}</p>
+      <p><strong>Mode of Transport:</strong> {{ gls.Mode_of_Transport }}</p>
+      <p><strong>Emergency Contact:</strong> {{ gls.Emergency_Contact }}</p>
+      <img id="badge-img" src="{% static 'qrcodes/' %}{{ user.Folio_Number }}.png" alt="QR Code" width="200">
+      <hr style="margin: 10px 0;">
+      <p><strong>RSVP:</strong></p>
+      <p>📞 Mr. Gopal: +91 90214 46391</p>
+      <p>📞 Mr. Virendra: +91 77198 20999</p>
+      <p>📍 <a href="https://maps.app.goo.gl/FKHibXYTZ3NP463w7" target="_blank">Google Maps Location</a></p>
+    </div>
+
+    <button onclick="downloadBadge()" class="btn">⬇️ Download</button>
+    <button onclick="shareBadge()" class="btn">📤 Share</button>
+    <img id="badge-preview" />
+  </div>
+</div>
+
+<canvas id="badgeCanvas" width="500" height="700"></canvas>
+
+<script>
+const badgeLines = [
+  { text: "Name: {{ user.Name }}", x: 60, y: 490, font: "bold 22px Poppins", color: "#335a80" },
+  { text: "Folio Number: {{ user.Folio_Number }}", x: 60, y: 520, font: "bold 22px Poppins", color: "#335a80" },
+  { text: "Batch: {{ gls.Batch }}", x: 60, y: 550, font: "bold 22px Poppins", color: "#335a80" },
+  { text: "Seat Number: {{ gls.Seat_Number }}", x: 60, y: 580, font: "bold 22px Poppins", color: "#335a80" },
+  { text: "RSVP: Mr. Gopal - 90214 46391", x: 60, y: 610, font: "bold 20px Poppins", color: "#335a80" },
+  { text: "RSVP: Mr. Virendra - 77198 20999", x: 60, y: 640, font: "bold 20px Poppins", color: "#335a80" }
+];
+
+function drawBadge(callback) {
+  const canvas = document.getElementById("badgeCanvas");
+  const ctx = canvas.getContext("2d");
+
+  const bg = new Image();
+  const qr = new Image();
+
+  bg.src = "{% static 'images/Checkin_Card_BG.png' %}";
+  qr.src = document.getElementById("badge-img").src;
+
+  bg.onload = function () {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
+
+    qr.onload = function () {
+      ctx.drawImage(qr, 95, 160, 300, 300); // QR position
+
+      ctx.textAlign = "left";
+      for (let line of badgeLines) {
+        ctx.font = line.font;
+        ctx.fillStyle = line.color;
+        ctx.fillText(line.text, line.x, line.y);
+      }
+
+      if (callback) callback(canvas);
+    };
+  };
+}
+
+window.onload = function () {
+  drawBadge(canvas => {
+    document.getElementById("badge-preview").src = canvas.toDataURL("image/png");
+  });
+};
+
+function downloadBadge() {
+  drawBadge(canvas => {
+    const link = document.createElement('a');
+    link.download = "{{ user.Folio_Number }}_badge.png";
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+  });
+}
+
+function shareBadge() {
+  drawBadge(canvas => {
+    canvas.toBlob(blob => {
+      const file = new File([blob], "{{ user.Folio_Number }}_badge.png", { type: "image/png" });
+
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        navigator.share({
+          title: "GLS Badge",
+          text: "Here is my GLS Badge!",
+          files: [file]
+        }).catch(() => alert("❌ Share canceled or not supported."));
+      } else {
+        alert("📤 Sharing is not supported on this device.");
+      }
+    });
+  });
+}
+</script>
+
+</body>
+</html>
